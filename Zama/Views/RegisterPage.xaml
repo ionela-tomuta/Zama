@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Zama.Views.RegisterPage"
-             Title="Register">
+            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+            x:Class="Zama.Views.RegisterPage"
+            Title="Register">
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="15">
             <Frame BorderColor="Gray" Padding="15">
                 <VerticalStackLayout Spacing="15">
                     <Entry Text="{Binding Name}" 
-                           Placeholder="Full Name"/>
+                          Placeholder="Full Name"/>
 
                     <Entry Text="{Binding Email}" 
-                           Placeholder="Email" 
-                           Keyboard="Email"/>
+                          Placeholder="Email" 
+                          Keyboard="Email"/>
 
                     <Entry Text="{Binding Password}" 
-                           Placeholder="Password" 
-                           IsPassword="True"/>
+                          Placeholder="Password" 
+                          IsPassword="True"/>
 
                     <Entry Text="{Binding PhoneNumber}" 
-                           Placeholder="Phone Number"/>
+                          Placeholder="Phone Number"/>
 
                     <Label Text="Date of Birth" FontAttributes="Bold"/>
                     <DatePicker Date="{Binding DateOfBirth}"/>
 
                     <Button Text="Create Account"
-                            Command="{Binding RegisterCommand}"
-                            BackgroundColor="DodgerBlue"
+                           Command="{Binding RegisterCommand}"
+                           BackgroundColor="DodgerBlue"
                             TextColor="White"
                             HeightRequest="50"
                             FontAttributes="Bold"/>
