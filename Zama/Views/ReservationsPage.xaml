@@ -1,12 +1,80 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodel="clr-namespace:Zama.ViewModels"
+             xmlns:sys="clr-namespace:System;assembly=netstandard"
              x:Class="Zama.Views.ReservationsPage"
-             Title="ReservationsPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             Title="Make a Reservation">
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+            <Label Text="Book Your Table"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+
+            <Frame BorderColor="Gray" Padding="10">
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Name" FontAttributes="Bold"/>
+                    <Entry Text="{Binding Name}"
+                           Placeholder="Enter your name"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame BorderColor="Gray" Padding="10">
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Phone" FontAttributes="Bold"/>
+                    <Entry Text="{Binding Phone}"
+                           Placeholder="Enter your phone number"
+                           Keyboard="Telephone"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame BorderColor="Gray" Padding="10">
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" RowSpacing="10">
+                    <Label Text="Date" 
+                           Grid.Column="0" 
+                           FontAttributes="Bold"/>
+                    <DatePicker Date="{Binding ReservationDate}"
+                              Grid.Column="0" 
+                              Grid.Row="1"
+                              MinimumDate="{Binding Source={x:Static sys:DateTime.Now}}"/>
+
+                    <Label Text="Time" 
+                           Grid.Column="1" 
+                           FontAttributes="Bold"/>
+                    <TimePicker Time="{Binding ReservationTime}"
+                              Grid.Column="1" 
+                              Grid.Row="1"/>
+                </Grid>
+            </Frame>
+
+            <Frame BorderColor="Gray" Padding="10">
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Number of Guests" FontAttributes="Bold"/>
+                    <Stepper Value="{Binding NumberOfGuests}"
+                             Minimum="1"
+                             Maximum="10"
+                             Increment="1"/>
+                    <Label Text="{Binding NumberOfGuests, StringFormat='Selected: {0} guests'}"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame BorderColor="Gray" Padding="10">
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Special Requests" FontAttributes="Bold"/>
+                    <Editor Text="{Binding SpecialRequests}"
+                            Placeholder="Enter any special requests..."
+                            HeightRequest="100"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <Button Text="Submit Reservation"
+                    Command="{Binding SubmitReservationCommand}"
+                    BackgroundColor="DodgerBlue"
+                    TextColor="White"
+                    HeightRequest="50"
+                    FontAttributes="Bold"/>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

@@ -1,9 +1,13 @@
-namespace Zama.Views;
+using Zama.ViewModels;
 
-public partial class ReservationsPage : ContentPage
+namespace Zama.Views
 {
-	public ReservationsPage()
-	{
-		InitializeComponent();
-	}
+    public partial class ReservationsPage : ContentPage
+    {
+        public ReservationsPage()
+        {
+            InitializeComponent();
+            BindingContext = new ReservationsPageViewModel();
+        }
+    }
 }

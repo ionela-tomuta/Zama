@@ -1,5 +1,4 @@
-﻿using Microsoft.Maui.Platform;
-using SQLite;
+﻿using SQLite;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
