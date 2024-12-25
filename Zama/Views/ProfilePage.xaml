@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
 <<<<<<< HEAD
-            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-            x:Class="Zama.Views.ProfilePage"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Zama.Views.ProfilePage"
             Title="My Profile">
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20">
