@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodel="clr-namespace:Zama.ViewModels"
+             x:Class="Zama.Views.MainPage"
+             Title="Home">
+    <ScrollView>
+        <Grid RowDefinitions="Auto,Auto,Auto" 
+              RowSpacing="20" 
+              Padding="20">
+
+            <!-- Header Section -->
+            <Frame Grid.Row="0" 
+                   BorderColor="Gray" 
+                   Margin="0,0,0,20"
+                   HasShadow="True">
+                <VerticalStackLayout>
+                    <Label Text="Welcome!" 
+                           FontSize="24" 
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"/>
+                    <Label Text="{Binding UserName}" 
+                           FontSize="18"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Quick Actions -->
+            <HorizontalStackLayout Grid.Row="1" 
+                                 Spacing="10" 
+                                 HorizontalOptions="Center">
+                <Button Text="Make Reservation"
+                        Command="{Binding MakeReservationCommand}"
+                        BackgroundColor="DodgerBlue"
+                        TextColor="White"
+                        Padding="10"/>
+                <Button Text="View Menu"
+                        Command="{Binding ViewMenuCommand}"
+                        BackgroundColor="Orange"
+                        TextColor="White"
+                        Padding="10"/>
+            </HorizontalStackLayout>
+
+            <!-- Today's Special -->
+            <Frame Grid.Row="2" 
+                   BorderColor="Orange"
+                   HasShadow="True">
+                <VerticalStackLayout>
+                    <Label Text="Today's Special" 
+                           FontSize="20" 
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"/>
+                    <Label Text="{Binding SpecialOfTheDay}" 
+                           FontSize="16"
+                           HorizontalOptions="Center"/>
+                    <Label Text="{Binding SpecialPrice, StringFormat='{0:C}'}" 
+                           FontSize="16"
+                           TextColor="Green"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Frame>
+        </Grid>
+    </ScrollView>
+</ContentPage>
