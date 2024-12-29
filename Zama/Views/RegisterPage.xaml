@@ -8,28 +8,38 @@
             <Frame BorderColor="Gray" Padding="15">
                 <VerticalStackLayout Spacing="15">
                     <Entry Text="{Binding Name}" 
-                          Placeholder="Full Name"/>
+                           Placeholder="Full Name"/>
 
                     <Entry Text="{Binding Email}" 
-                          Placeholder="Email" 
-                          Keyboard="Email"/>
+                           Placeholder="Email" 
+                           Keyboard="Email"/>
 
                     <Entry Text="{Binding Password}" 
-                          Placeholder="Password" 
-                          IsPassword="True"/>
+                           Placeholder="Password" 
+                           IsPassword="True"/>
+
+                    <Entry Text="{Binding ConfirmPassword}" 
+                           Placeholder="Confirm Password" 
+                           IsPassword="True"/>
 
                     <Entry Text="{Binding PhoneNumber}" 
-                          Placeholder="Phone Number"/>
+                           Placeholder="Phone Number"/>
 
-                    <Label Text="Date of Birth" FontAttributes="Bold"/>
-                    <DatePicker Date="{Binding DateOfBirth}"/>
+                    <Label Text="{Binding ErrorMessage}"
+                           TextColor="Red"
+                           IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyConverter}}"/>
 
                     <Button Text="Create Account"
-                           Command="{Binding RegisterCommand}"
-                           BackgroundColor="DodgerBlue"
+                            Command="{Binding RegisterCommand}"
+                            BackgroundColor="DodgerBlue"
                             TextColor="White"
                             HeightRequest="50"
                             FontAttributes="Bold"/>
+
+                    <Button Text="Back to Login"
+                            Command="{Binding GoToLoginCommand}"
+                            BackgroundColor="Transparent"
+                            TextColor="DodgerBlue"/>
                 </VerticalStackLayout>
             </Frame>
         </VerticalStackLayout>

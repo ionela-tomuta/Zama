@@ -1,9 +1,18 @@
-namespace Zama.Views;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Zama.Data;
+using Zama.ViewModels;
 
-public partial class LoginPage : ContentPage
+namespace Zama.Views
 {
-	public LoginPage()
-	{
-		InitializeComponent();
-	}
+    public partial class LoginPage : ContentPage
+    {
+        public LoginPage(LoginViewModel viewModel)
+        {
+            InitializeComponent();
+            BindingContext = viewModel;
+        }
+    }
 }

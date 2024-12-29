@@ -1,33 +1,44 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-            x:Class="Zama.Views.LoginPage"
-            Title="Login">
-    <VerticalStackLayout Padding="20" Spacing="20" VerticalOptions="Center">
-        <Label Text="Welcome Back" 
-              FontSize="24" 
-              HorizontalOptions="Center"/>
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Zama.Views.LoginPage"
+             Title="Login">
 
-        <Frame BorderColor="Gray" Padding="15">
-            <VerticalStackLayout Spacing="15">
-                <Entry Placeholder="Email"
-                      Text="{Binding Email}"
-                      Keyboard="Email"/>
+    <StackLayout Padding="20" Spacing="20">
+        <Label Text="Autentificare"
+               FontSize="Large"
+               HorizontalOptions="Center"/>
 
-                <Entry Placeholder="Password"
-                      Text="{Binding Password}"
-                      IsPassword="True"/>
+        <!-- Error Message -->
+        <Label Text="{Binding ErrorMessage}"
+               TextColor="Red"
+               HorizontalOptions="Center"/>
 
-                <Button Text="Login"
-                       Command="{Binding LoginCommand}"
-                       BackgroundColor="DodgerBlue"
-                       TextColor="White"/>
+        <!-- Email -->
+        <Entry Placeholder="Email"
+               Text="{Binding Email}"
+               Keyboard="Email"/>
 
-                <Button Text="Register New Account"
-                       Command="{Binding GoToRegisterCommand}"
-                       BackgroundColor="Transparent"
-                       TextColor="DodgerBlue"/>
-            </VerticalStackLayout>
-        </Frame>
-    </VerticalStackLayout>
+        <!-- Password -->
+        <Entry Placeholder="Parolă"
+               Text="{Binding Password}"
+               IsPassword="True"/>
+
+        <!-- Login Button -->
+        <Button Text="Autentificare"
+                Command="{Binding LoginCommand}"
+                BackgroundColor="#2ecc71"
+                TextColor="White"/>
+
+        <!-- Register Button -->
+        <Button Text="Nu ai cont? Înregistrează-te"
+                Command="{Binding GoToRegisterCommand}"
+                BackgroundColor="Transparent"
+                TextColor="#2ecc71"/>
+
+        <!-- Loading Indicator -->
+        <ActivityIndicator IsRunning="{Binding IsBusy}"
+                          IsVisible="{Binding IsBusy}"
+                          HorizontalOptions="Center"/>
+    </StackLayout>
 </ContentPage>

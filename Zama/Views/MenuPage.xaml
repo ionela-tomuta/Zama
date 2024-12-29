@@ -2,11 +2,46 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Zama.Views.MenuPage"
-             Title="Menu">
-    <VerticalStackLayout>
-        <Label 
-            Text="Menu Page"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             xmlns:viewmodel="clr-namespace:Zama.ViewModels"
+             Title="Meniu">
+    <ScrollView>
+        <VerticalStackLayout Spacing="20" Padding="20">
+            <Label 
+                Text="Meniul Restaurantului"
+                FontSize="Large"
+                HorizontalOptions="Center"
+                FontAttributes="Bold"/>
+            <Button 
+                Text="Deschide Meniu PDF" 
+                Command="{Binding OpenMenuCommand}"
+                HorizontalOptions="Center"
+                WidthRequest="200"/>
+            <Label Text="Categorii Meniu" FontSize="Medium" FontAttributes="Bold"/>
+            <CollectionView x:Name="CategoriesCollection"
+                            ItemsSource="{Binding MenuCategories}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Label Text="{Binding}" 
+                               Padding="10"
+                               BackgroundColor="{StaticResource Primary}"
+                               TextColor="White"
+                               HorizontalOptions="FillAndExpand"/>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            <Label Text="Oferte Speciale" FontSize="Medium" FontAttributes="Bold"/>
+            <CollectionView x:Name="SpecialsCollection"
+                            ItemsSource="{Binding DailySpecials}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Label Text="{Binding}" 
+                               Padding="10"
+                               BackgroundColor="{StaticResource Secondary}"
+                               TextColor="White"
+                               HorizontalOptions="FillAndExpand"/>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

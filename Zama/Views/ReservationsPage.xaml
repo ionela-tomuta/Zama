@@ -1,80 +1,116 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:viewmodel="clr-namespace:Zama.ViewModels"
-             xmlns:sys="clr-namespace:System;assembly=netstandard"
+             xmlns:converters="clr-namespace:Zama.Converters"
              x:Class="Zama.Views.ReservationsPage"
              Title="Make a Reservation">
-    <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="20">
-            <Label Text="Book Your Table"
-                   FontSize="24"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center"/>
 
-            <Frame BorderColor="Gray" Padding="10">
-                <VerticalStackLayout Spacing="5">
-                    <Label Text="Name" FontAttributes="Bold"/>
-                    <Entry Text="{Binding Name}"
-                           Placeholder="Enter your name"/>
-                </VerticalStackLayout>
-            </Frame>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:InverseBoolConverter x:Key="InverseBoolConverter"/>
 
-            <Frame BorderColor="Gray" Padding="10">
-                <VerticalStackLayout Spacing="5">
-                    <Label Text="Phone" FontAttributes="Bold"/>
-                    <Entry Text="{Binding Phone}"
-                           Placeholder="Enter your phone number"
-                           Keyboard="Telephone"/>
-                </VerticalStackLayout>
-            </Frame>
+            <Style TargetType="Label">
+                <Setter Property="Margin" Value="0,5,0,2"/>
+            </Style>
+            <Style TargetType="Entry">
+                <Setter Property="Margin" Value="0,0,0,10"/>
+            </Style>
+            <Style TargetType="Picker">
+                <Setter Property="Margin" Value="0,0,0,10"/>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
-            <Frame BorderColor="Gray" Padding="10">
-                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" RowSpacing="10">
-                    <Label Text="Date" 
-                           Grid.Column="0" 
-                           FontAttributes="Bold"/>
-                    <DatePicker Date="{Binding ReservationDate}"
-                              Grid.Column="0" 
-                              Grid.Row="1"
-                              MinimumDate="{Binding Source={x:Static sys:DateTime.Now}}"/>
+    <Grid RowDefinitions="Auto,*">
+        <!-- Loading Indicator -->
+        <ActivityIndicator Grid.RowSpan="2"
+                          IsVisible="{Binding IsBusy}"
+                          IsRunning="{Binding IsBusy}"
+                          HorizontalOptions="Center"
+                          VerticalOptions="Center"
+                          ZIndex="1"/>
 
-                    <Label Text="Time" 
-                           Grid.Column="1" 
-                           FontAttributes="Bold"/>
-                    <TimePicker Time="{Binding ReservationTime}"
-                              Grid.Column="1" 
-                              Grid.Row="1"/>
-                </Grid>
-            </Frame>
+        <!-- Header -->
+        <Label Text="Make Your Reservation" 
+               FontSize="24" 
+               HorizontalOptions="Center"
+               Margin="0,20,0,20"/>
 
-            <Frame BorderColor="Gray" Padding="10">
-                <VerticalStackLayout Spacing="5">
-                    <Label Text="Number of Guests" FontAttributes="Bold"/>
-                    <Stepper Value="{Binding NumberOfGuests}"
-                             Minimum="1"
-                             Maximum="10"
-                             Increment="1"/>
-                    <Label Text="{Binding NumberOfGuests, StringFormat='Selected: {0} guests'}"
-                           HorizontalOptions="Center"/>
-                </VerticalStackLayout>
-            </Frame>
+        <!-- Main Content -->
+        <ScrollView Grid.Row="1" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}">
+            <VerticalStackLayout Padding="20" Spacing="10">
+                <!-- Name Section -->
+                <Label Text="Your Name" FontAttributes="Bold"/>
+                <Entry Text="{Binding Name}" 
+                       Placeholder="Enter your name"
+                       IsSpellCheckEnabled="false"/>
 
-            <Frame BorderColor="Gray" Padding="10">
-                <VerticalStackLayout Spacing="5">
-                    <Label Text="Special Requests" FontAttributes="Bold"/>
-                    <Editor Text="{Binding SpecialRequests}"
-                            Placeholder="Enter any special requests..."
-                            HeightRequest="100"/>
-                </VerticalStackLayout>
-            </Frame>
+                <!-- Phone Section -->
+                <Label Text="Contact Phone" FontAttributes="Bold"/>
+                <Entry Text="{Binding ContactPhone}" 
+                       Placeholder="Enter your phone number"
+                       Keyboard="Telephone"/>
 
-            <Button Text="Submit Reservation"
-                    Command="{Binding SubmitReservationCommand}"
-                    BackgroundColor="DodgerBlue"
-                    TextColor="White"
-                    HeightRequest="50"
-                    FontAttributes="Bold"/>
-        </VerticalStackLayout>
-    </ScrollView>
+                <!-- Date and Time Section -->
+                <Frame Padding="10" Margin="0,10">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="When would you like to visit?" 
+                               FontSize="16" 
+                               FontAttributes="Bold"/>
+
+                        <Label Text="Date"/>
+                        <DatePicker Date="{Binding ReservationDate}" 
+                                  MinimumDate="{Binding MinimumDate}"
+                                  Format="D"/>
+
+                        <Label Text="Time"/>
+                        <TimePicker Time="{Binding ReservationTime}"
+                                  Format="t"/>
+
+                        <Label Text="Duration"/>
+                        <Picker SelectedItem="{Binding SelectedDuration}"
+                                ItemsSource="{Binding AvailableDurations}"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Table and Guests Section -->
+                <Frame Padding="10" Margin="0,10">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Table Selection" 
+                               FontSize="16" 
+                               FontAttributes="Bold"/>
+
+                        <Label Text="Number of Guests"/>
+                        <HorizontalStackLayout Spacing="10">
+                            <Stepper Value="{Binding NumberOfGuests}"
+                                     Minimum="1"
+                                     Maximum="20"
+                                     Increment="1"/>
+                            <Label Text="{Binding NumberOfGuests, StringFormat='{0} guests'}"
+                                   VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+
+                        <Label Text="Select Table"/>
+                        <Picker SelectedItem="{Binding SelectedTable}"
+                                ItemsSource="{Binding AvailableTables}"
+                                ItemDisplayBinding="{Binding DisplayName}"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Special Requests Section -->
+                <Label Text="Special Requests" FontAttributes="Bold"/>
+                <Editor Text="{Binding SpecialRequests}"
+                        Placeholder="Enter any special requests or preferences"
+                        HeightRequest="100"
+                        AutoSize="TextChanges"/>
+
+                <!-- Submit Button -->
+                <Button Text="Make Reservation"
+                        Command="{Binding SubmitReservationCommand}"
+                        IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"
+                        Margin="0,20,0,20"
+                        BackgroundColor="{StaticResource Primary}"/>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
 </ContentPage>

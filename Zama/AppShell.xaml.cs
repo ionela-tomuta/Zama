@@ -7,15 +7,17 @@ namespace Zama
         public AppShell()
         {
             InitializeComponent();
-<<<<<<< HEAD
+
+            // Nu este nevoie să înregistrezi rutele pentru ShellContent
+            // Înregistrează doar rutele pentru navigare "modală" sau particulară
             Routing.RegisterRoute("login", typeof(LoginPage));
             Routing.RegisterRoute("register", typeof(RegisterPage));
-=======
-            Routing.RegisterRoute(nameof(MainPage), typeof(MainPage));
-            Routing.RegisterRoute(nameof(MenuPage), typeof(MenuPage));
-            Routing.RegisterRoute(nameof(ReservationsPage), typeof(ReservationsPage));
-            Routing.RegisterRoute(nameof(ProfilePage), typeof(ProfilePage));
->>>>>>> f102f00ce96dbe2ce991080af9bd591939b460c1
+
+            // Pentru rutele din TabBar, folosește calea completă
+            Routing.RegisterRoute("main/home", typeof(MainPage));
+            Routing.RegisterRoute("main/menu", typeof(MenuPage));
+            Routing.RegisterRoute("main/reservations", typeof(ReservationsPage));
+            Routing.RegisterRoute("main/profile", typeof(ProfilePage));
         }
     }
 }

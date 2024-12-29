@@ -1,9 +1,22 @@
-namespace Zama.Views;
+using Zama.ViewModels;
 
-public partial class ProfilePage : ContentPage
+namespace Zama.Views
 {
-	public ProfilePage()
-	{
-		InitializeComponent();
-	}
+    public partial class ProfilePage : ContentPage
+    {
+        public ProfilePage(ProfilePageViewModel viewModel)
+        {
+            InitializeComponent();
+            BindingContext = viewModel;
+        }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            if (BindingContext is ProfilePageViewModel viewModel)
+            {
+                viewModel.LoadUserDataCommand.Execute(null);
+            }
+        }
+    }
 }

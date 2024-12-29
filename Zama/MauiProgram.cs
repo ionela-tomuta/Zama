@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
-using Zama.Views;
-using Zama.ViewModels;
 using Zama.Services;
+using Zama.ViewModels;
+using Zama.Views;
 
 namespace Zama
 {
@@ -18,75 +18,72 @@ namespace Zama
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
-<<<<<<< HEAD
-            // Servicii de sistem
-            builder.Services.AddSingleton<IConnectivity>(Connectivity.Current);
-
-            // Servicii aplicație
-            builder.Services.AddSingleton<DatabaseService>();
-            builder.Services.AddSingleton<AuthService>();
-            builder.Services.AddSingleton<NotificationService>();
-
-            // Configurare notificări specifice platformei
-#if ANDROID
-            builder.Services.AddSingleton<INotificationManager, NotificationManagerImplementation>();
-#else
-                builder.Services.AddSingleton<INotificationManager, DummyNotificationManager>();
-#endif
-
-            // Înregistrare Pages și ViewModels
-            RegisterPagesAndViewModels(builder.Services);
-=======
-            // Înregistrarea serviciilor MAUI
-            builder.Services.AddSingleton<IConnectivity>(Connectivity.Current);
-
-            // Înregistrarea paginilor
-            builder.Services.AddTransient<MainPage>();
-            builder.Services.AddTransient<MenuPage>();
-            builder.Services.AddTransient<ReservationsPage>();
-            builder.Services.AddTransient<ProfilePage>();
-
-            // Înregistrarea ViewModels
-            builder.Services.AddTransient<MainPageViewModel>();
-            builder.Services.AddTransient<MenuPageViewModel>();
-            builder.Services.AddTransient<ReservationsPageViewModel>();
-            builder.Services.AddTransient<ProfilePageViewModel>();
-
-            builder.Services.AddSingleton<DatabaseService>();
-            builder.Services.AddSingleton<AuthService>();
-#if ANDROID
-            builder.Services.AddSingleton<INotificationManager, NotificationManagerImplementation>();
-#else
-builder.Services.AddSingleton<INotificationManager, DummyNotificationManager>();
-#endif
-            builder.Services.AddSingleton<NotificationService>();
->>>>>>> f102f00ce96dbe2ce991080af9bd591939b460c1
-
-#if DEBUG
-            builder.Logging.AddDebug();
-#endif
-<<<<<<< HEAD
+            ConfigureServices(builder.Services);
+            ConfigureLogging(builder);
 
             return builder.Build();
         }
 
-        private static void RegisterPagesAndViewModels(IServiceCollection services)
+        private static void ConfigureServices(IServiceCollection services)
         {
+            // Configurare HttpClient pentru servicii
+            services.AddHttpClient("API", client =>
+            {
+                client.BaseAddress = new Uri("https://localhost:7189/"); // Ajustează portul după nevoie
+            });
+
+            // Înregistrare HttpClient pentru fiecare serviciu
+            services.AddHttpClient<AuthService>(client =>
+            {
+                client.BaseAddress = new Uri("https://localhost:7189/");
+            });
+
+            services.AddHttpClient<ReservationService>(client =>
+            {
+                client.BaseAddress = new Uri("https://localhost:7189/");
+            });
+
+            services.AddHttpClient<MenuService>(client =>
+            {
+                client.BaseAddress = new Uri("https://localhost:7189/");
+            });
+
             // Pages
+            services.AddTransient<LoginPage>();
+            services.AddTransient<RegisterPage>();
             services.AddTransient<MainPage>();
             services.AddTransient<MenuPage>();
             services.AddTransient<ReservationsPage>();
             services.AddTransient<ProfilePage>();
+            services.AddTransient<AppShell>();
 
             // ViewModels
+            services.AddTransient<LoginViewModel>();
+            services.AddTransient<RegisterViewModel>();
             services.AddTransient<MainPageViewModel>();
             services.AddTransient<MenuPageViewModel>();
             services.AddTransient<ReservationsPageViewModel>();
             services.AddTransient<ProfilePageViewModel>();
+
+            // Servicii de infrastructură
+            services.AddSingleton<IConnectivity>(Connectivity.Current);
+            services.AddSingleton<ISecureStorage>(SecureStorage.Default);
+
+            // Servicii de business
+            services.AddScoped<AuthService>();
+            services.AddScoped<ReservationService>();
+            services.AddScoped<MenuService>();
         }
-=======
-            return builder.Build();
+
+        private static void ConfigureLogging(MauiAppBuilder builder)
+        {
+            builder.Logging
+                .AddDebug()
+                .SetMinimumLevel(LogLevel.Debug);
+
+#if DEBUG
+            builder.Logging.AddConsole();
+#endif
         }
->>>>>>> f102f00ce96dbe2ce991080af9bd591939b460c1
     }
 }

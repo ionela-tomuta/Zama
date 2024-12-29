@@ -1,34 +1,44 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<Shell x:Class="Zama.AppShell"
-       xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-       xmlns:views="clr-namespace:Zama.Views"
-       Shell.FlyoutBehavior="Disabled">
-    
-    <TabBar>
-        <Tab Title="Home" Icon="home.png">
-            <ShellContent
-                ContentTemplate="{DataTemplate views:MainPage}"
-                Route="MainPage" />
-        </Tab>
+<Shell
+    x:Class="Zama.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:Zama.Views"
+    Shell.FlyoutBehavior="Disabled">
 
-        <Tab Title="Menu" Icon="menu.png">
-            <ShellContent
-                ContentTemplate="{DataTemplate views:MenuPage}"
-                Route="MenuPage" />
-        </Tab>
+    <!-- Login și Register trebuie să fie în afara TabBar și cu rute simple -->
+    <ShellContent
+        Route="login"
+        ContentTemplate="{DataTemplate views:LoginPage}" />
 
-        <Tab Title="Reservations" Icon="calendar.png">
-            <ShellContent
-                ContentTemplate="{DataTemplate views:ReservationsPage}"
-                Route="ReservationsPage" />
-        </Tab>
+    <ShellContent
+        Route="register"
+        ContentTemplate="{DataTemplate views:RegisterPage}" />
 
-        <Tab Title="Profile" Icon="profile.png">
-            <ShellContent
-                ContentTemplate="{DataTemplate views:ProfilePage}"
-                Route="ProfilePage" />
-        </Tab>
+    <!-- TabBar pentru paginile principale după autentificare -->
+    <TabBar Route="main">
+        <ShellContent
+            Route="home"
+            Title="Home" 
+            Icon="home.png"
+            ContentTemplate="{DataTemplate views:MainPage}" />
+
+        <ShellContent
+            Route="menu"
+            Title="Menu" 
+            Icon="menu.png"
+            ContentTemplate="{DataTemplate views:MenuPage}" />
+
+        <ShellContent
+            Route="reservations"
+            Title="Reservations" 
+            Icon="calendar.png"
+            ContentTemplate="{DataTemplate views:ReservationsPage}" />
+
+        <ShellContent
+            Route="profile"
+            Title="Profile" 
+            Icon="profile.png"
+            ContentTemplate="{DataTemplate views:ProfilePage}" />
     </TabBar>
-
 </Shell>

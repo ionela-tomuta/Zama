@@ -1,58 +1,189 @@
-ï»¿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Zama.Models;
+using System.Net.Http.Json;
 
 namespace Zama.Services
 {
-    public class ReservationService : IDataService<Reservation>
+    public class ReservationService
     {
-        private readonly DatabaseService _databaseService;
-        private readonly NotificationService _notificationService;
+        private readonly HttpClient _httpClient;
+        private readonly ILogger<ReservationService> _logger;
+        private const string BaseUrl = "api/reservations";
 
-        public ReservationService(DatabaseService databaseService, NotificationService notificationService)
+        public ReservationService(HttpClient httpClient, ILogger<ReservationService> logger)
         {
-            _databaseService = databaseService;
-            _notificationService = notificationService;
+            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<List<Reservation>> GetAllAsync()
+        // Metodele existente rãmân neschimbate
+        public async Task<List<Reservation>> GetUserReservationsAsync(int userId)
         {
-            var db = _databaseService.GetConnection();
-            return await db.Table<Reservation>().ToListAsync();
-        }
-
-        public async Task<Reservation> GetByIdAsync(int id)
-        {
-            var db = _databaseService.GetConnection();
-            return await db.Table<Reservation>()
-                .Where(r => r.Id == id)
-                .FirstOrDefaultAsync();
-        }
-
-        public async Task<int> AddAsync(Reservation reservation)
-        {
-            var db = _databaseService.GetConnection();
-            var result = await db.InsertAsync(reservation);
-            if (result > 0)
+            try
             {
-                await _notificationService.SendReservationConfirmation(reservation);
+                var response = await _httpClient.GetAsync($"{BaseUrl}/user/{userId}");
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadFromJsonAsync<List<Reservation>>();
             }
-            return result;
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting user reservations");
+                throw;
+            }
         }
 
-        public async Task<bool> UpdateAsync(Reservation reservation)
+        public async Task<List<Table>> GetAvailableTablesAsync(DateTime date, TimeSpan time, TimeSpan duration)
         {
-            var db = _databaseService.GetConnection();
-            var result = await db.UpdateAsync(reservation);
-            return result > 0;
+            try
+            {
+                var query = $"{BaseUrl}/available-tables?" +
+                           $"date={date:yyyy-MM-dd}&" +
+                           $"time={time:hh\\:mm}&" +
+                           $"duration={duration:hh\\:mm}";
+
+                var response = await _httpClient.GetAsync(query);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadFromJsonAsync<List<Table>>();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting available tables");
+                throw;
+            }
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<bool> IsTableAvailableAsync(int tableId, DateTime date, TimeSpan time, TimeSpan duration)
         {
-            var db = _databaseService.GetConnection();
-            var result = await db.DeleteAsync<Reservation>(id);
-            return result > 0;
+            try
+            {
+                var query = $"{BaseUrl}/check-availability?" +
+                           $"tableId={tableId}&" +
+                           $"date={date:yyyy-MM-dd}&" +
+                           $"time={time:hh\\:mm}&" +
+                           $"duration={duration:hh\\:mm}";
+
+                var response = await _httpClient.GetAsync(query);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadFromJsonAsync<bool>();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking table availability");
+                throw;
+            }
+        }
+
+        public async Task<Reservation> CreateReservationAsync(Reservation reservation)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync(BaseUrl, reservation);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadFromJsonAsync<Reservation>();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating reservation");
+                throw;
+            }
+        }
+
+        public async Task<bool> CancelReservationAsync(int reservationId)
+        {
+            try
+            {
+                var response = await _httpClient.PutAsync($"{BaseUrl}/{reservationId}/cancel", null);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadFromJsonAsync<bool>();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error cancelling reservation");
+                throw;
+            }
+        }
+
+        public async Task<bool> UpdateReservationStatusAsync(int reservationId, string status)
+        {
+            try
+            {
+                var response = await _httpClient.PutAsJsonAsync(
+                    $"{BaseUrl}/{reservationId}/status",
+                    new { status });
+
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadFromJsonAsync<bool>();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating reservation status");
+                throw;
+            }
+        }
+
+        // NOI METODE CRUD
+
+        // Preluare toate rezervãrile
+        public async Task<List<Reservation>> GetAllReservationsAsync()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync(BaseUrl);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadFromJsonAsync<List<Reservation>>();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting all reservations");
+                throw;
+            }
+        }
+
+        // Preluare rezervare dupã ID
+        public async Task<Reservation> GetReservationByIdAsync(int reservationId)
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync($"{BaseUrl}/{reservationId}");
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadFromJsonAsync<Reservation>();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error getting reservation with ID {reservationId}");
+                throw;
+            }
+        }
+
+        // Actualizare rezervare
+        public async Task<Reservation> UpdateReservationAsync(int reservationId, Reservation reservation)
+        {
+            try
+            {
+                var response = await _httpClient.PutAsJsonAsync($"{BaseUrl}/{reservationId}", reservation);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadFromJsonAsync<Reservation>();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error updating reservation with ID {reservationId}");
+                throw;
+            }
+        }
+
+        // ?tergere rezervare
+        public async Task<bool> DeleteReservationAsync(int reservationId)
+        {
+            try
+            {
+                var response = await _httpClient.DeleteAsync($"{BaseUrl}/{reservationId}");
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error deleting reservation with ID {reservationId}");
+                throw;
+            }
         }
     }
 }

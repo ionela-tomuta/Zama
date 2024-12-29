@@ -1,8 +1,13 @@
-namespace Zama.Views;
-public partial class MenuPage : ContentPage
+using Zama.ViewModels;
+
+namespace Zama.Views
 {
-    public MenuPage()
+    public partial class MenuPage : ContentPage
     {
-        InitializeComponent();
+        public MenuPage(MenuPageViewModel viewModel)
+        {
+            InitializeComponent();
+            BindingContext = viewModel;
+        }
     }
 }

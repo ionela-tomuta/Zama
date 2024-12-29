@@ -1,7 +1,6 @@
 ﻿using Android.App;
 using Android.Content;
 using AndroidX.Core.App;
-using Microsoft.Maui.Platform;
 using Application = Android.App.Application;
 
 namespace Zama.Services
@@ -12,7 +11,7 @@ namespace Zama.Services
         {
             if (DeviceInfo.Platform == DevicePlatform.Android)
             {
-                var context = Android.App.Application.Context;
+                var context = Application.Context;
                 var intent = new Intent(context, typeof(MainActivity));
                 var pendingIntent = PendingIntent.GetActivity(
                     context,
@@ -28,7 +27,6 @@ namespace Zama.Services
                     .SetContentIntent(pendingIntent);
 
                 var notificationManager = NotificationManagerCompat.From(context);
-
                 var delay = scheduledTime - DateTime.Now;
                 if (delay.TotalMilliseconds > 0)
                 {
@@ -42,7 +40,7 @@ namespace Zama.Services
         {
             if (DeviceInfo.Platform == DevicePlatform.Android)
             {
-                var context = Android.App.Application.Context;
+                var context = Application.Context;
                 var notificationManager = NotificationManagerCompat.From(context);
                 notificationManager.Cancel(notificationId);
             }
@@ -53,9 +51,8 @@ namespace Zama.Services
         {
             if (DeviceInfo.Platform == DevicePlatform.Android)
             {
-                var context = Android.App.Application.Context;
+                var context = Application.Context;
                 var notificationManager = NotificationManagerCompat.From(context);
-
                 var intent = new Intent(context, typeof(MainActivity));
                 var pendingIntent = PendingIntent.GetActivity(
                     context,

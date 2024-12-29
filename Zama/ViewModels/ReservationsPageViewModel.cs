@@ -1,66 +1,67 @@
-﻿using System;
-using SQLite;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using CommunityToolkit.Mvvm.Input;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Threading.Tasks;
-using Zama.Views;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using static Microsoft.Maui.ApplicationModel.Permissions;
-using System.Xml.Linq;
+using System.Windows.Input;
 
-namespace Zama.ViewModels
+public class ReservationsPageViewModel : INotifyPropertyChanged
 {
-    public partial class ReservationsPageViewModel : ObservableObject
+    private readonly IReservationService _reservationService;
+
+    public ReservationsPageViewModel(IReservationService reservationService)
     {
-        [ObservableProperty]
-        private string name;
+        _reservationService = reservationService;
+        LoadTablesCommand = new RelayCommand(async () => await LoadTables());
+        LoadAvailableData(); // Asigură-te că încărcăm datele la crearea ViewModel-ului
+    }
 
-        [ObservableProperty]
-        private string phone;
+    public ICommand LoadTablesCommand { get; }
 
-        [ObservableProperty]
-        private DateTime reservationDate = DateTime.Now;
-
-        [ObservableProperty]
-        private TimeSpan reservationTime = new TimeSpan(19, 0, 0);
-
-        [ObservableProperty]
-        private int numberOfGuests = 2;
-
-        [ObservableProperty]
-        private string specialRequests;
-
-        [RelayCommand]
-        private async Task SubmitReservation()
+    private ObservableCollection<Table> _availableTables;
+    public ObservableCollection<Table> AvailableTables
+    {
+        get => _availableTables;
+        set
         {
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                await Shell.Current.DisplayAlert("Error", "Please enter your name", "OK");
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(phone))
-            {
-                await Shell.Current.DisplayAlert("Error", "Please enter your phone number", "OK");
-                return;
-            }
-
-            if (numberOfGuests < 1)
-            {
-                await Shell.Current.DisplayAlert("Error", "Please enter a valid number of guests", "OK");
-                return;
-            }
-
-            await Shell.Current.DisplayAlert("Success", "Your reservation has been submitted successfully!", "OK");
-
-            name = "";
-            phone = "";
-            reservationDate = DateTime.Now;
-            reservationTime = new TimeSpan(19, 0, 0);
-            numberOfGuests = 2;
-            specialRequests = "";
+            _availableTables = value;
+            OnPropertyChanged(nameof(AvailableTables));
         }
     }
+
+    private ObservableCollection<string> _availableDurations;
+    public ObservableCollection<string> AvailableDurations
+    {
+        get => _availableDurations;
+        set
+        {
+            _availableDurations = value;
+            OnPropertyChanged(nameof(AvailableDurations));
+        }
+    }
+
+    private async Task LoadTables()
+    {
+        var tables = await _reservationService.GetAvailableTablesAsync();
+        AvailableTables = new ObservableCollection<Table>(tables);
+    }
+
+    private async Task LoadAvailableData()
+    {
+        AvailableTables = new ObservableCollection<Table>(await _reservationService.GetAvailableTablesAsync());
+        AvailableDurations = new ObservableCollection<string> { "30 min", "1 h", "2 h" }; // Exemplu
+    }
+
+    public event PropertyChangedEventHandler PropertyChanged;
+    private void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+}
+
+public class Table
+{
+    public string Name { get; set; }
+    public int Capacity { get; set; }
+}
+
+public interface IReservationService
+{
+    Task<IEnumerable<Table>> GetAvailableTablesAsync();
 }

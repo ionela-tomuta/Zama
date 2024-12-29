@@ -1,28 +1,35 @@
-﻿using SQLite;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Zama.Models
 {
     [Table("Users")]
     public class User
     {
-        [PrimaryKey, AutoIncrement]
+        [Key]
         public int Id { get; set; }
-        public string Name { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
-        public string PhoneNumber { get; set; }
-        public string Role { get; set; } // "Admin", "Customer", "Staff"
-        public DateTime? DateOfBirth { get; set; }
-        public int LoyaltyPoints { get; set; }
-        public List<string> DietaryPreferences { get; set; }
-        public List<string> Allergies { get; set; }
-        public DateTime RegistrationDate { get; set; }
-        public List<Badge> Badges { get; set; }
-    }
 
+        [Required]
+        [MaxLength(250)]
+        public string Name { get; set; }
+
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
+
+        [Required]
+        public string Password { get; set; }
+
+        [Phone]
+        public string? PhoneNumber { get; set; }  // Făcut opțional prin adăugarea ?
+
+        [MaxLength(50)]
+        public string Role { get; set; } = "User";
+
+        public int LoyaltyPoints { get; set; }
+
+        public DateTime RegistrationDate { get; set; } = DateTime.UtcNow;
+
+        public virtual ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
+    }
 }

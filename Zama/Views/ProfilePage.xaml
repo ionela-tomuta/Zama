@@ -1,59 +1,77 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-<<<<<<< HEAD
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Zama.Views.ProfilePage"
-             Title="My Profile">
+             Title="Profil">
+
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="20">
-            <Frame BorderColor="Gray" Padding="15">
-                <Grid RowDefinitions="Auto,Auto,Auto,Auto" 
-                     ColumnDefinitions="Auto,*" 
-                     RowSpacing="10" 
-                     ColumnSpacing="15">
+        <StackLayout Padding="20" Spacing="20">
+            <!-- Loading Indicator -->
+            <ActivityIndicator IsRunning="{Binding IsBusy}" 
+                             IsVisible="{Binding IsBusy}"
+                             HorizontalOptions="Center" />
 
-                    <Label Text="Name:" FontAttributes="Bold"/>
-                    <Label Text="{Binding CurrentUser.Name}" Grid.Column="1"/>
+            <!-- User Info Section -->
+            <Frame>
+                <StackLayout Spacing="10">
+                    <Label Text="Informații Personale" 
+                           FontSize="Large" 
+                           FontAttributes="Bold"/>
 
-                    <Label Text="Email:" FontAttributes="Bold" Grid.Row="1"/>
-                    <Label Text="{Binding CurrentUser.Email}" Grid.Row="1" Grid.Column="1"/>
+                    <StackLayout Orientation="Horizontal">
+                        <Label Text="Nume: " FontAttributes="Bold"/>
+                        <Label Text="{Binding CurrentUser.Name}"/>
+                    </StackLayout>
 
-                    <Label Text="Phone:" FontAttributes="Bold" Grid.Row="2"/>
-                    <Label Text="{Binding CurrentUser.PhoneNumber}" Grid.Row="2" Grid.Column="1"/>
+                    <StackLayout Orientation="Horizontal">
+                        <Label Text="Email: " FontAttributes="Bold"/>
+                        <Label Text="{Binding CurrentUser.Email}"/>
+                    </StackLayout>
 
-                    <Label Text="Loyalty Points:" FontAttributes="Bold" Grid.Row="3"/>
-                    <Label Text="{Binding CurrentUser.LoyaltyPoints}" Grid.Row="3" Grid.Column="1"/>
-                </Grid>
+                    <StackLayout Orientation="Horizontal">
+                        <Label Text="Telefon: " FontAttributes="Bold"/>
+                        <Label Text="{Binding CurrentUser.PhoneNumber}"/>
+                    </StackLayout>
+
+                    <StackLayout Orientation="Horizontal">
+                        <Label Text="Puncte Loialitate: " FontAttributes="Bold"/>
+                        <Label Text="{Binding CurrentUser.LoyaltyPoints}"/>
+                    </StackLayout>
+                </StackLayout>
             </Frame>
 
-            <Label Text="My Reservations" 
-                  FontSize="20" 
-                  FontAttributes="Bold"/>
+            <!-- Reservations Section -->
+            <Frame>
+                <StackLayout Spacing="10">
+                    <Label Text="Rezervările Mele" 
+                           FontSize="Large" 
+                           FontAttributes="Bold"/>
 
-            <CollectionView ItemsSource="{Binding UserReservations}">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Frame Margin="0,5" Padding="10">
-                            <Grid RowDefinitions="Auto,Auto,Auto" 
-                                 ColumnDefinitions="Auto,*" 
-                                 RowSpacing="5">
+                    <CollectionView ItemsSource="{Binding UserReservations}"
+                                  EmptyView="Nu aveți rezervări active.">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Frame Margin="0,5" Padding="10">
+                                    <StackLayout>
+                                        <Label Text="{Binding ReservationDate, StringFormat='Data: {0:d}'}" />
+                                        <Label Text="{Binding ReservationTime, StringFormat='Ora: {0:t}'}" />
+                                        <Label Text="{Binding NumberOfGuests, StringFormat='Număr persoane: {0}'}" />
+                                        <Label Text="{Binding Status, StringFormat='Status: {0}'}" />
+                                    </StackLayout>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </StackLayout>
+            </Frame>
 
-                                <Label Text="Date:" FontAttributes="Bold"/>
-                                <Label Text="{Binding ReservationDate, StringFormat='{0:d}'}" 
-                                      Grid.Column="1"/>
-
-                                <Label Text="Time:" FontAttributes="Bold" Grid.Row="1"/>
-                                <Label Text="{Binding ReservationTime, StringFormat='{0:t}'}" 
-                                      Grid.Row="1" Grid.Column="1"/>
-
-                                <Label Text="Guests:" FontAttributes="Bold" Grid.Row="2"/>
-                                <Label Text="{Binding NumberOfGuests}" 
-                                      Grid.Row="2" Grid.Column="1"/>
-                            </Grid>
-                        </Frame>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-        </VerticalStackLayout>
+            <!-- Logout Button -->
+            <Button Text="Deconectare"
+                    Command="{Binding LogoutCommand}"
+                    BackgroundColor="#e74c3c"
+                    TextColor="White"
+                    HeightRequest="50"
+                    CornerRadius="25"/>
+        </StackLayout>
     </ScrollView>
 </ContentPage>

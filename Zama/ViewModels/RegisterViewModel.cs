@@ -1,56 +1,168 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Zama.Models;
 using Zama.Services;
-using Microsoft.Maui.Storage;
 
 namespace Zama.ViewModels
 {
     public partial class RegisterViewModel : ObservableObject
     {
-        private readonly DatabaseService _database;
+        private readonly AuthService _authService;
+        private readonly ILogger<RegisterViewModel> _logger;
 
-        [ObservableProperty] private string name;
-        [ObservableProperty] private string email;
-        [ObservableProperty] private string password;
-        [ObservableProperty] private string phoneNumber;
-        [ObservableProperty] private DateTime dateOfBirth = DateTime.Now;
+        [ObservableProperty]
+        private string _name = string.Empty;
 
-        public RegisterViewModel(DatabaseService database)
+        [ObservableProperty]
+        private string _email = string.Empty;
+
+        [ObservableProperty]
+        private string _password = string.Empty;
+
+        [ObservableProperty]
+        private string _confirmPassword = string.Empty;
+
+        [ObservableProperty]
+        private string _phoneNumber = string.Empty;
+
+        [ObservableProperty]
+        private string _errorMessage = string.Empty;
+
+        [ObservableProperty]
+        private bool _isBusy;
+
+        public RegisterViewModel(AuthService authService, ILogger<RegisterViewModel> logger)
         {
-            _database = database;
+            _authService = authService;
+            _logger = logger;
         }
 
         [RelayCommand]
-        private async Task Register()
+        private async Task RegisterAsync()
         {
-            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(email) ||
-                string.IsNullOrEmpty(password) || string.IsNullOrEmpty(phoneNumber))
+            if (IsBusy) return;
+
+            try
             {
-                await Shell.Current.DisplayAlert("Error", "Please fill all fields", "OK");
-                return;
+                IsBusy = true;
+                _logger.LogInformation("Starting registration process");
+
+                if (!ValidateInput()) return;
+
+                var newUser = new User
+                {
+                    Name = Name,
+                    Email = Email,
+                    Password = Password, // API va face hash-ul parolei
+                    PhoneNumber = PhoneNumber,
+                    Role = "User",
+                    LoyaltyPoints = 0,
+                    RegistrationDate = DateTime.UtcNow
+                };
+
+                var registeredUser = await _authService.RegisterAsync(newUser);
+                if (registeredUser != null)
+                {
+                    await Shell.Current.DisplayAlert("Succes", "Înregistrare reușită!", "OK");
+                    ResetFields();
+                    await NavigateToLogin();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Registration error");
+                ErrorMessage = "A apărut o eroare la înregistrare";
+                await Shell.Current.DisplayAlert("Eroare", ErrorMessage, "OK");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        private bool ValidateInput()
+        {
+            if (string.IsNullOrWhiteSpace(Name))
+            {
+                ErrorMessage = "Introduceți numele";
+                return false;
             }
 
-            var user = new User
+            if (string.IsNullOrWhiteSpace(Email))
             {
-                Name = name,
-                Email = email,
-                Password = password,
-                PhoneNumber = phoneNumber,
-                DateOfBirth = dateOfBirth,
-                Role = "Customer",
-                RegistrationDate = DateTime.Now,
-                LoyaltyPoints = 0
-            };
+                ErrorMessage = "Introduceți adresa de email";
+                return false;
+            }
 
-            await _database.SaveUserAsync(user);
-            await Shell.Current.GoToAsync("///login");
-            await Shell.Current.DisplayAlert("Success", "Account created successfully!", "OK");
+            if (!IsValidEmail(Email))
+            {
+                ErrorMessage = "Adresa de email nu este validă";
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(Password))
+            {
+                ErrorMessage = "Introduceți parola";
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(ConfirmPassword))
+            {
+                ErrorMessage = "Confirmați parola";
+                return false;
+            }
+
+            if (Password != ConfirmPassword)
+            {
+                ErrorMessage = "Parolele nu coincid";
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool IsValidEmail(string email)
+        {
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == email;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        [RelayCommand]
+        private async Task GoToLoginAsync()
+        {
+            if (IsBusy) return;
+            await NavigateToLogin();
+        }
+
+        private void ResetFields()
+        {
+            Name = string.Empty;
+            Email = string.Empty;
+            Password = string.Empty;
+            ConfirmPassword = string.Empty;
+            PhoneNumber = string.Empty;
+            ErrorMessage = string.Empty;
+        }
+
+        private async Task NavigateToLogin()
+        {
+            try
+            {
+                await Shell.Current.GoToAsync("///login");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Navigation error");
+                ErrorMessage = "Eroare la navigare către pagina de login";
+            }
         }
     }
 }
